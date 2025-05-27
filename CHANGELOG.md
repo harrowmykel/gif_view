@@ -1,3 +1,10 @@
+## 1.0.3
+* Rebuilt android folder in example using modern flutter code
+* added status.completed, corrected status.stopped
+* status.completed leaves the frame at the last frame
+* status.completed is set before onfinished is called 
+
+
 ## 1.0.2
 * Loader improvements
 

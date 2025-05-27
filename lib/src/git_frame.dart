@@ -4,5 +4,5 @@ class GifFrame {
   final ImageInfo imageInfo;
   final Duration duration;
 
-  GifFrame(this.imageInfo, this.duration);
+  const GifFrame(this.imageInfo, this.duration);
 }

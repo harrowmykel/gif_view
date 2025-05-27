@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:gif_view/src/gif_controller.dart';
 import 'package:gif_view/src/gif_frame_builder.dart';
 
-import 'src/gif_cache_provider.dart';
-import 'src/gif_loader.dart';
+import 'package:gif_view/src/gif_cache_provider.dart';
+import 'package:gif_view/src/gif_loader.dart';
 
 export 'package:gif_view/src/gif_cache_provider.dart';
 export 'package:gif_view/src/gif_controller.dart';
@@ -33,7 +33,8 @@ class GifView extends StatefulWidget {
     BuildContext context,
     Object error,
     VoidCallback tryAgain,
-  )? errorBuilder;
+  )?
+  errorBuilder;
   final WidgetBuilder? progressBuilder;
 
   /// How to fit the image within its bounds.
@@ -72,7 +73,7 @@ class GifView extends StatefulWidget {
 
   GifView.network(
     String url, {
-    Key? key,
+    super.key,
     this.controller,
     this.frameRate,
     this.height,
@@ -100,12 +101,11 @@ class GifView extends StatefulWidget {
     this.autoPlay = true,
     this.loop = true,
     this.playInverted = false,
-  })  : image = NetworkImage(url, scale: scale, headers: headers),
-        super(key: key);
+  }) : image = NetworkImage(url, scale: scale, headers: headers);
 
   GifView.asset(
     String asset, {
-    Key? key,
+    super.key,
     this.controller,
     this.frameRate,
     this.height,
@@ -133,12 +133,12 @@ class GifView extends StatefulWidget {
     this.autoPlay = true,
     this.loop = true,
     this.playInverted = false,
-  })  : image = AssetImage(asset, package: package, bundle: bundle),
-        super(key: key);
+  }) : image = AssetImage(asset, package: package, bundle: bundle);
 
   GifView.memory(
     Uint8List bytes, {
-    Key? key,
+
+    super.key,
     this.controller,
     this.frameRate,
     this.height,
@@ -165,11 +165,10 @@ class GifView extends StatefulWidget {
     this.autoPlay = true,
     this.loop = true,
     this.playInverted = false,
-  })  : image = MemoryImage(bytes, scale: scale),
-        super(key: key);
+  }) : image = MemoryImage(bytes, scale: scale);
 
   const GifView({
-    Key? key,
+    super.key,
     required this.image,
     this.controller,
     this.frameRate,
@@ -196,7 +195,7 @@ class GifView extends StatefulWidget {
     this.autoPlay = true,
     this.loop = true,
     this.playInverted = false,
-  }) : super(key: key);
+  });
 
   /// Pre-fetches GIF images and stores them in cache for faster loading.
   ///
@@ -254,9 +253,7 @@ class GifViewState extends State<GifView> with SingleTickerProviderStateMixin {
       onFrame: widget.onFrame,
     );
     controller.addListener(_listener);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _loadImage(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadImage());
     super.initState();
   }
 
@@ -333,10 +330,11 @@ class GifViewState extends State<GifView> with SingleTickerProviderStateMixin {
     try {
       final data = await GifLoader.instance.fetch(widget.image);
       if (data != null) {
-        final frames = await GifFrameBuilder(
-          data: data,
-          frameRate: widget.frameRate,
-        ).build();
+        final frames =
+            await GifFrameBuilder(
+              data: data,
+              frameRate: widget.frameRate,
+            ).build();
         if (frames.isNotEmpty) {
           widget.onLoaded?.call(frames.length);
           controller.configure(frames, updateFrames: updateFrames);

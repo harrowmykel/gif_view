@@ -4,7 +4,7 @@
 # This file should be version controlled and should not be manually edited.
 
 version:
-  revision: ffb2ecea5223acdd139a5039be2f9c796962833d
-  channel: stable
+  revision: "ea121f8859e4b13e47a8f845e4586164519588bc"
+  channel: "stable"
 
 project_type: package

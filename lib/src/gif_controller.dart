@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gif_view/src/git_frame.dart';
 
-enum GifStatus { loading, playing, stoped, paused, reversing, error }
+enum GifStatus {
+  loading,
+  playing,
+  stopped,
+  completed,
+  paused,
+  reversing,
+  error,
+}
 
 class GifController extends ChangeNotifier {
   List<GifFrame> _frames = [];
@@ -43,7 +51,12 @@ class GifController extends ChangeNotifier {
       case GifStatus.reversing:
         _runNextFrame();
         break;
-      case GifStatus.stoped:
+
+      // completed gifs should show the last frame
+      case GifStatus.completed:
+        _currentIndex = _frames.isEmpty ? 0 : _frames.length - 1;
+        break;
+      case GifStatus.stopped:
         _currentIndex = 0;
         break;
       case GifStatus.loading:
@@ -69,8 +82,8 @@ class GifController extends ChangeNotifier {
       } else if (_loop) {
         _currentIndex = _frames.length - 1;
       } else {
+        status = GifStatus.completed;
         _onFinish?.call();
-        status = GifStatus.stoped;
       }
     } else {
       if (_currentIndex < _frames.length - 1) {
@@ -79,8 +92,8 @@ class GifController extends ChangeNotifier {
       } else if (_loop) {
         _currentIndex = 0;
       } else {
+        status = GifStatus.completed;
         _onFinish?.call();
-        status = GifStatus.stoped;
       }
     }
 
@@ -92,17 +105,23 @@ class GifController extends ChangeNotifier {
   GifFrame get currentFrame => _frames[_currentIndex];
   int get countFrames => _frames.length;
   bool get isReversing => status == GifStatus.reversing;
-  bool get isPaused => status == GifStatus.stoped || status == GifStatus.paused;
+  bool get isPaused =>
+      status == GifStatus.completed ||
+      status == GifStatus.stopped ||
+      status == GifStatus.paused;
   bool get isPlaying => status == GifStatus.playing;
 
   void play({bool? inverted, int? initialFrame}) {
     if (status == GifStatus.loading || _frames.isEmpty) return;
     _inverted = inverted ?? _inverted;
 
-    if (status == GifStatus.stoped || status == GifStatus.paused) {
+    if (status == GifStatus.completed ||
+        status == GifStatus.stopped ||
+        status == GifStatus.paused) {
       status = _inverted ? GifStatus.reversing : GifStatus.playing;
 
-      bool isValidInitialFrame = initialFrame != null &&
+      bool isValidInitialFrame =
+          initialFrame != null &&
           initialFrame > 0 &&
           initialFrame < _frames.length - 1;
 
@@ -122,7 +141,7 @@ class GifController extends ChangeNotifier {
     if (_isDisposed) {
       return;
     }
-    status = GifStatus.stoped;
+    status = GifStatus.stopped;
   }
 
   void pause() {
@@ -142,7 +161,7 @@ class GifController extends ChangeNotifier {
     exception = null;
     _frames = frames;
     if (!updateFrames || status == GifStatus.loading) {
-      status = GifStatus.stoped;
+      status = GifStatus.stopped;
       if (_autoPlay) {
         play();
       }
