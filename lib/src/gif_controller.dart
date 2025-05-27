@@ -98,8 +98,11 @@ class GifController extends ChangeNotifier {
     }
 
     _onFrame?.call(_currentIndex);
-    notifyListeners();
+
+    // set current index
     _run();
+    // notify listener
+    notifyListeners();
   }
 
   GifFrame get currentFrame => _frames[_currentIndex];
